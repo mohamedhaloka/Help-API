@@ -9,6 +9,8 @@ const dbConnection = require('./config/dbConnection')
 
 const userRoute = require('./routes/userRoute')
 const authRoute = require('./routes/authRoute')
+const postRoute = require('./routes/postRoute')
+const commentRoute = require('./routes/commentRoute')
 
 const app = express()
 
@@ -29,6 +31,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/users', userRoute)
 app.use('/api/v1/auth', authRoute)
+app.use('/api/v1/posts', postRoute)
+app.use('/api/v1/comments', commentRoute)
 
 app.all('*', (req, res, next) => {
     next(new ApiError(404, `Route [${req.method}] ${req.originalUrl} not found`))

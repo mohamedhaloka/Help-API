@@ -32,11 +32,37 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        role: {
+            type: String,
+            enum: ['admin', 'user'],
+            default: 'user',
+        },
+        verified: {
+            type: Boolean,
+            default: false,
+        },
+        verificationCodeHashed: String,
+        verificationCodeExpired: Date,
+        verificationCodeDone: Boolean,
+        post: {
+            id: { type: String },
+            title: {
+                type: String,
+            },
+            description: {
+                type: String,
+            },
+            createdAt: Date,
+        },
+        comments: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: "Comment",
+            }
+        ],
     },
     { timestamps: true },
 )
-
-UserSchema.index({ name: 'text' })
 
 const UserModel = new mongoose.model('User', UserSchema);
 
