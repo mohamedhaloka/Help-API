@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose')
 const moment = require('moment-timezone');
 const { encryptData } = require('../utils/crypto');
 
@@ -23,11 +24,9 @@ exports.getLoggedUserPost = asyncHandler(async (req, res, next) => {
 
 exports.updateLoggedUserPost = asyncHandler(async (req, res, next) => {
 
-    req.body.id = Math.random().toString(36).substr(2, 9).toString();
-    const user = await UserModel.findByIdAndUpdate(
-        req.user._id,
-        { post: req.body },
-        { new: true },
+    const { title, description, createdAt } = req.body;
+    const user = await UserModel.findById(
+        req.user._id
     );
 
     if (!user) {
@@ -37,7 +36,17 @@ exports.updateLoggedUserPost = asyncHandler(async (req, res, next) => {
     if (!req.body) {
         next(new ApiError(400, 'You must add post'))
     }
+    if (user.post.id === undefined) {
+        var id = new mongoose.Types.ObjectId();
+        user.post.id = id;
+    }
 
+    user.post.user = req.user._id;
+    user.post.title = title;
+    user.post.description = description;
+    user.post.createdAt = createdAt;
+
+    await user.save()
 
     res.status(200).json({
         status: 'success',
@@ -45,7 +54,6 @@ exports.updateLoggedUserPost = asyncHandler(async (req, res, next) => {
         post: user.post,
     })
 });
-
 
 
 exports.deleteLoggedUserPost = asyncHandler(async (req, res, next) => {
@@ -73,22 +81,27 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
     const limit = (req.query.limit || 10) * 1;
     const skip = page * limit
 
-    const maxDate = Date.now();
+    const maxDate = Date.now(); //Time as UTC
     const minDate = (new Date(maxDate)).setHours((new Date(maxDate)).getHours() - 3)
 
-    console.log(Date(maxDate));
-    console.log(Date(minDate));
     const users = await UserModel.find({
         'post.createdAt': {
             $gte: minDate,
             $lt: maxDate,
         }
-    }).skip(skip).limit(limit);
+        // "post.likes": { $not: { $size: 0 } },
+    }).skip(skip).limit(limit).populate({ path: 'post.user', select: 'name profilePhoto' });
 
     var posts = [];
 
     for (var i in users) {
+        console.log(users[i].post.title)
+        if (!users[i].post.title) {
+            continue;
+        }
+        // if (users[i].post.likes.length > 0) {
         posts.push(users[i].post)
+        // }
     }
 
 
@@ -101,5 +114,33 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
             itemsCount: users.length,
         },
         result: posts,
+    })
+});
+
+exports.addLike = asyncHandler(async (req, res, next) => {
+
+
+    if (req.params.id === req.user._id.toString()) {
+        next(new ApiError(404, 'You can not add like to your post'))
+    }
+
+    const user = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        {
+            $addToSet: { "post.likes": req.user._id, }
+
+        },
+        { new: true },
+    );
+
+    if (!user) {
+        next(new ApiError(404, 'User not found'))
+    }
+
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Add Like to post successfully',
+        post: user.post,
     })
 });

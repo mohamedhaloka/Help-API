@@ -11,6 +11,8 @@ const userRoute = require('./routes/userRoute')
 const authRoute = require('./routes/authRoute')
 const postRoute = require('./routes/postRoute')
 const commentRoute = require('./routes/commentRoute')
+const countryRoute = require('./routes/countryRoute')
+const stateRoute = require('./routes/stateRoute')
 
 const app = express()
 
@@ -33,6 +35,8 @@ app.use('/api/v1/users', userRoute)
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/posts', postRoute)
 app.use('/api/v1/comments', commentRoute)
+app.use('/api/v1/countries', countryRoute)
+app.use('/api/v1/states', stateRoute)
 
 app.all('*', (req, res, next) => {
     next(new ApiError(404, `Route [${req.method}] ${req.originalUrl} not found`))

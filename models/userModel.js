@@ -23,6 +23,18 @@ const UserSchema = new mongoose.Schema(
         profilePhoto: {
             type: String,
         },
+        country: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Country",
+        },
+        country: {
+            type: String,
+            required: true,
+        },
+        city: {
+            type: String,
+            required: true,
+        },
         password: {
             type: String,
             required: [true, 'Password is required'],
@@ -45,7 +57,11 @@ const UserSchema = new mongoose.Schema(
         verificationCodeExpired: Date,
         verificationCodeDone: Boolean,
         post: {
-            id: { type: String },
+            id: { type: mongoose.Schema.Types.ObjectId },
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
             title: {
                 type: String,
             },
@@ -53,13 +69,10 @@ const UserSchema = new mongoose.Schema(
                 type: String,
             },
             createdAt: Date,
+            likes: {
+                type: [mongoose.Schema.ObjectId],
+            },
         },
-        comments: [
-            {
-                type: mongoose.Types.ObjectId,
-                ref: "Comment",
-            }
-        ],
     },
     { timestamps: true },
 )
