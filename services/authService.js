@@ -5,6 +5,7 @@ const { encryptData } = require('../utils/crypto');
 
 const ApiError = require('../utils/apiError')
 const UserModel = require('../models/userModel')
+const { Country, State, City } = require('country-state-city');
 
 const generateToken = (userId) => {
     const privateKey = process.env.TOKEN_PRIVATE_KEY;
@@ -12,7 +13,21 @@ const generateToken = (userId) => {
 }
 
 
-exports.signUp = asyncHandler(async (req, res) => {
+exports.signUp = asyncHandler(async (req, res, next) => {
+
+    const { countryCode, stateCode } = req.body;
+
+    const country = Country.getCountryByCode(countryCode)
+
+    if (!country) {
+        next(new ApiError(404, 'Wrong countryCode'))
+    }
+
+    const state = State.getStateByCodeAndCountry(stateCode, countryCode)
+
+    if (!state) {
+        next(new ApiError(404, 'Wrong stateCode'))
+    }
 
     req.body.password = encryptData(req.body.password);
 

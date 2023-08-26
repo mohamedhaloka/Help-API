@@ -23,15 +23,15 @@ const UserSchema = new mongoose.Schema(
         profilePhoto: {
             type: String,
         },
-        country: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Country",
-        },
-        country: {
+        countryCode: {
             type: String,
             required: true,
         },
-        city: {
+        stateCode: {
+            type: String,
+            required: true,
+        },
+        cityCode: {
             type: String,
             required: true,
         },
