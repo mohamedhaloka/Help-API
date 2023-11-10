@@ -13,7 +13,6 @@ const postRoute = require('./routes/postRoute')
 const commentRoute = require('./routes/commentRoute')
 const countryRoute = require('./routes/countryRoute')
 const stateRoute = require('./routes/stateRoute')
-const cityRoute = require('./routes/cityRoute')
 
 const app = express()
 
@@ -22,8 +21,8 @@ dotenv.config({ path: './config.env' })
 
 dbConnection()
 
-app.listen(8000, () => {
-    console.log('listening on port 8000')
+app.listen(3000, () => {
+    console.log('listening on port 3000')
 })
 
 app.get('/', (req, res) => {
@@ -38,7 +37,6 @@ app.use('/api/v1/posts', postRoute)
 app.use('/api/v1/comments', commentRoute)
 app.use('/api/v1/countries', countryRoute)
 app.use('/api/v1/states', stateRoute)
-app.use('/api/v1/cities', cityRoute)
 
 app.all('*', (req, res, next) => {
     next(new ApiError(404, `Route [${req.method}] ${req.originalUrl} not found`))

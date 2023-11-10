@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const mongoose = require('mongoose')
 const moment = require('moment-timezone');
-const { encryptData } = require('../utils/crypto');
 
 const ApiError = require('../utils/apiError')
 const UserModel = require('../models/userModel')
@@ -25,9 +24,7 @@ exports.getLoggedUserPost = asyncHandler(async (req, res, next) => {
 exports.updateLoggedUserPost = asyncHandler(async (req, res, next) => {
 
     const { title, description, createdAt } = req.body;
-    const user = await UserModel.findById(
-        req.user._id
-    );
+    const user = await UserModel.findById(req.user._id);
 
     if (!user) {
         next(new ApiError(404, 'User not found'))
@@ -95,13 +92,10 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
     var posts = [];
 
     for (var i in users) {
-        console.log(users[i].post.title)
         if (!users[i].post.title) {
             continue;
         }
-        // if (users[i].post.likes.length > 0) {
         posts.push(users[i].post)
-        // }
     }
 
 
@@ -119,7 +113,6 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
 
 exports.addLike = asyncHandler(async (req, res, next) => {
 
-
     if (req.params.id === req.user._id.toString()) {
         next(new ApiError(404, 'You can not add like to your post'))
     }
@@ -136,7 +129,6 @@ exports.addLike = asyncHandler(async (req, res, next) => {
     if (!user) {
         next(new ApiError(404, 'User not found'))
     }
-
 
     res.status(200).json({
         status: 'success',

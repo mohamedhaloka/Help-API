@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const { Country, State, City } = require('country-state-city');
+const { Country } = require('country-state-city');
 
 
 exports.getCountries = asyncHandler(async (req, res, next) => {

@@ -31,14 +31,14 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        cityCode: {
-            type: String,
-            required: true,
-        },
         password: {
             type: String,
             required: [true, 'Password is required'],
             trim: true,
+        },
+        birthOfDate: {
+            type: Date,
+            required: true,
         },
         active: {
             type: Boolean,
